@@ -1,0 +1,57 @@
+import { useState } from 'react'
+
+function AddStudent() {
+  const [form, setForm] = useState({
+    name: '',
+    rollno: '',
+    class: '',
+    
+  })
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value })
+  }
+
+  const handleSubmit = async () => {
+    try {
+      const res = await fetch('http://localhost:5000/api/students', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form)
+      })
+      const data = await res.json()
+      alert('Student added! ✅')
+      setForm({ name: '', rollno:  '', class: '' })
+    } catch (err) {
+      alert('Error: ' + err.message)
+    }
+  }
+
+  return (
+    <div>
+      <h2>Add Student</h2>
+      <input
+        placeholder="Name"
+        name="name"
+        value={form.name}
+        onChange={handleChange}
+      /><br/><br/>
+      <input
+        placeholder="Roll No"
+        name="rollno"
+        value={form.rollno}
+        onChange={handleChange}
+      /><br/><br/>
+      <input
+        placeholder="Class"
+        name="class"
+        value={form.class}
+        onChange={handleChange}
+      /><br/><br/>
+      
+      <button onClick={handleSubmit}>Add Student</button>
+    </div>
+  )
+}
+
+export default AddStudent

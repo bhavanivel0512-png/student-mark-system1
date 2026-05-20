@@ -1,0 +1,74 @@
+import { useState, useEffect } from 'react'
+
+function Results() {
+  const [students, setStudents] = useState([])
+
+  useEffect(() => {
+    fetch('http://localhost:5000/api/students')
+      .then(res => res.json())
+      .then(data => setStudents(data))
+  }, [])
+
+  const calculateResult = (mark) => {
+    const total = mark.tamil + mark.english + 
+                  mark.maths + mark.science + mark.social
+    const percentage = (total / 500) * 100
+
+    let grade = ''
+    if (percentage >= 90) grade = 'A+'
+    else if (percentage >= 80) grade = 'A'
+    else if (percentage >= 70) grade = 'B'
+    else if (percentage >= 60) grade = 'C'
+    else if (percentage >= 35) grade = 'D'
+    else grade = 'F'
+
+    const status = percentage >= 35 ? 'Pass ✅' : 'Fail ❌'
+
+    return { total, percentage: percentage.toFixed(2), grade, status }
+  }
+
+  return (
+    <div>
+      <h2>Results</h2>
+      <table border="1">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Roll No</th>
+            <th>Tamil</th>
+            <th>English</th>
+            <th>Maths</th>
+            <th>Science</th>
+            <th>Social</th>
+            <th>Total</th>
+            <th>Percentage</th>
+            <th>Grade</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {students.map(s => {
+            const result = calculateResult(s.mark)
+            return (
+              <tr key={s._id}>
+                <td>{s.name}</td>
+                <td>{s.rollno}</td>
+                <td>{s.mark.tamil}</td>
+                <td>{s.mark.english}</td>
+                <td>{s.mark.maths}</td>
+                <td>{s.mark.science}</td>
+                <td>{s.mark.social}</td>
+                <td>{result.total}</td>
+                <td>{result.percentage}%</td>
+                <td>{result.grade}</td>
+                <td>{result.status}</td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
+export default Results
