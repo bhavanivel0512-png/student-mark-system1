@@ -5,7 +5,7 @@ function AddStudent() {
     name: '',
     rollno: '',
     class: '',
-     email: ''
+    email: ''
     
   })
 
