@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 
 function EnterMarks() {
+
   const [students, setStudents] = useState([])
+
   const [selectedId, setSelectedId] = useState('')
-  
+
   const [marks, setMarks] = useState({
     tamil: '',
     english: '',
@@ -14,7 +16,9 @@ function EnterMarks() {
 
   // Fetch students
   const fetchStudents = async () => {
+
     try {
+
       const res = await fetch(
         'https://student-mark-backend.onrender.com/api/students'
       )
@@ -24,40 +28,64 @@ function EnterMarks() {
       console.log(data)
 
       setStudents(data)
+
     } catch (err) {
+
       console.log(err)
+
       alert('Failed to load students')
+
     }
+
   }
 
   useEffect(() => {
-    fetchStudents()
+
+    const loadStudents = async () => {
+
+      // Wait for Render backend wakeup
+      await new Promise((resolve) => setTimeout(resolve, 4000))
+
+      fetchStudents()
+
+    }
+
+    loadStudents()
+
   }, [])
 
-  // Handle input changes
+  // Handle mark input
   const handleChange = (e) => {
+
     setMarks({
       ...marks,
       [e.target.name]: Number(e.target.value)
     })
+
   }
 
-  // Submit marks
+  // Save marks
   const handleSubmit = async () => {
+
     if (!selectedId) {
       alert('Please select a student')
       return
     }
 
     try {
+
       const res = await fetch(
         `https://student-mark-backend.onrender.com/api/students/${selectedId}`,
         {
           method: 'PUT',
+
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ mark: marks })
+
+          body: JSON.stringify({
+            mark: marks
+          })
         }
       )
 
@@ -67,7 +95,7 @@ function EnterMarks() {
 
       alert('Marks updated successfully ✅')
 
-      // Clear form
+      // Reset marks
       setMarks({
         tamil: '',
         english: '',
@@ -78,30 +106,42 @@ function EnterMarks() {
 
       setSelectedId('')
 
-      // Refresh students list
+      // Refresh students
       fetchStudents()
 
     } catch (err) {
+
       console.log(err)
+
       alert('Error: ' + err.message)
+
     }
+
   }
 
   return (
+
     <div>
+
       <h2>Enter Marks</h2>
 
       <select
         value={selectedId}
         onChange={(e) => setSelectedId(e.target.value)}
       >
-        <option value="">Select Student</option>
+
+        <option value="">
+          Select Student
+        </option>
 
         {students.map((s) => (
+
           <option key={s._id} value={s._id}>
             {s.name}
           </option>
+
         ))}
+
       </select>
 
       <br />
@@ -165,8 +205,10 @@ function EnterMarks() {
       <button onClick={handleSubmit}>
         Save Marks
       </button>
+
     </div>
+
   )
 }
 
-export default EnterMarks
+export default EnterMarks;

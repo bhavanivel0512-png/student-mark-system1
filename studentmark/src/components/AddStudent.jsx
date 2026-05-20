@@ -22,7 +22,7 @@ function AddStudent() {
       })
       const data = await res.json()
       alert('Student added! ✅')
-      setForm({ name: '', rollno:  '', class: '' })
+      setForm({ name: '', rollno:  '', class: '',email:'' })
     } catch (err) {
       alert('Error: ' + err.message)
     }
