@@ -21,8 +21,8 @@ app.use('/api/students', studentRoutes);
 app.get("/", (req,res)=>{
     res.send("student mark system api ready")})
 
-app.listen(5000,()=>{
-    console.log(`server at localhost5000`)
+app.listen(process.env.PORT || 5000, () => {
+  console.log('server running!')
 });
 
 
