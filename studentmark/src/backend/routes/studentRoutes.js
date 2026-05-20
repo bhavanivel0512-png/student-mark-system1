@@ -12,15 +12,30 @@ router.get('/',async(req,res)=>{
         res.status(500).json({message:err.message});
     }
 });
-router.post('/',async(req,res)=>{
-    try{
-        const newStudent=new student(req.body);
-        await newStudent.save();
-        res.status(201).json(newStudent);
-    }
-    catch(err){
-        res.status(500).json({message:err.message});
-    }
+router.post('/', async (req, res) => {
+
+  try {
+
+    console.log(req.body)
+
+    const newStudent = new student(req.body)
+
+    const savedStudent = await newStudent.save()
+
+    console.log(savedStudent)
+
+    res.status(201).json(savedStudent)
+
+  } catch (err) {
+
+    console.log(err)
+
+    res.status(500).json({
+      message: err.message
+    })
+
+  }
+
 });
 router.put('/:id', async (req, res) => {
   try {
