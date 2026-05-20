@@ -27,7 +27,16 @@ function EnterMarks() {
 
       console.log(data)
 
-      setStudents(data)
+      // Check array
+      if (Array.isArray(data)) {
+
+        setStudents(data)
+
+      } else {
+
+        setStudents([])
+
+      }
 
     } catch (err) {
 
@@ -39,11 +48,12 @@ function EnterMarks() {
 
   }
 
+  // Load students
   useEffect(() => {
 
     const loadStudents = async () => {
 
-      // Wait for Render backend wakeup
+      // Render backend wake up
       await new Promise((resolve) => setTimeout(resolve, 4000))
 
       fetchStudents()
@@ -54,7 +64,7 @@ function EnterMarks() {
 
   }, [])
 
-  // Handle mark input
+  // Handle input change
   const handleChange = (e) => {
 
     setMarks({
@@ -68,8 +78,11 @@ function EnterMarks() {
   const handleSubmit = async () => {
 
     if (!selectedId) {
+
       alert('Please select a student')
+
       return
+
     }
 
     try {
@@ -95,7 +108,7 @@ function EnterMarks() {
 
       alert('Marks updated successfully ✅')
 
-      // Reset marks
+      // Reset form
       setMarks({
         tamil: '',
         english: '',
@@ -106,7 +119,7 @@ function EnterMarks() {
 
       setSelectedId('')
 
-      // Refresh students
+      // Reload students
       fetchStudents()
 
     } catch (err) {
@@ -211,4 +224,4 @@ function EnterMarks() {
   )
 }
 
-export default EnterMarks;
+export default EnterMarks
