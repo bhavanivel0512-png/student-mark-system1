@@ -4,8 +4,7 @@ function AddStudent() {
   const [form, setForm] = useState({
     name: '',
     rollno: '',
-    class: '',
-    email: ''
+    class: ''
     
   })
 
@@ -14,7 +13,6 @@ function AddStudent() {
   }
 
   const handleSubmit = async () => {
-
   try {
 
     const res = await fetch(
@@ -34,7 +32,6 @@ function AddStudent() {
 
     console.log(data)
 
-    // Check response status
     if (res.ok) {
 
       alert('Student added successfully ✅')
@@ -42,8 +39,7 @@ function AddStudent() {
       setForm({
         name: '',
         rollno: '',
-        class: '',
-        email: ''
+        class: ''
       })
 
     } else {
@@ -59,9 +55,7 @@ function AddStudent() {
     alert('Error: ' + err.message)
 
   }
-
 }
-
   return (
     <div>
       <h2>Add Student</h2>
@@ -83,12 +77,7 @@ function AddStudent() {
         value={form.class}
         onChange={handleChange}
       /><br/><br/>
-      <input
-  placeholder="Email"
-  name="email"
-  value={form.email}
-  onChange={handleChange}
-/><br/><br/>
+      
       
       <button onClick={handleSubmit}>Add Student</button>
     </div>

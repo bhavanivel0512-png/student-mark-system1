@@ -55,7 +55,7 @@ function Dashboard() {
             <th>Name</th>
             <th>Roll No</th>
             <th>Class</th>
-            <th>Email</th>
+            
           </tr>
         </thead>
 
@@ -67,7 +67,6 @@ function Dashboard() {
               <td>{s.name}</td>
               <td>{s.rollno}</td>
               <td>{s.class}</td>
-              <td>{s.email}</td>
             </tr>
 
           ))}
