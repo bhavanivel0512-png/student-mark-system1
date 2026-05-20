@@ -6,10 +6,7 @@ import studentRoutes from './routes/studentRoutes.js';
 dotenv.config();
 const app=express()
 app.use(cors({
-  origin: [
-    'https://student-mark-entry-system1.vercel.app',
-    'https://student-mark-entry-system1-3d3mz5n60.vercel.app'
-  ]
+  origin: '*'
 }));
 app.use(express.json());
 mongoose.connect(process.env.MONGO_URI)
