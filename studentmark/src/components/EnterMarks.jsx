@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 function EnterMarks() {
   const [students, setStudents] = useState([])
   const [selectedId, setSelectedId] = useState('')
+  
   const [marks, setMarks] = useState({
     tamil: '',
     english: '',
@@ -11,25 +12,77 @@ function EnterMarks() {
     social: ''
   })
 
-  useEffect(() => {
-    fetch('https://student-mark-backend.onrender.com/api/students')
-      .then(res => res.json())
-      .then(data => setStudents(data))
-  }, [])
-const handleChange = (e) => {
-  setMarks({ ...marks, [e.target.name]: Number(e.target.value) })
-}
-
-  const handleSubmit = async () => {
+  // Fetch students
+  const fetchStudents = async () => {
     try {
-      const res=await fetch(`https://student-mark-backend.onrender.com/api/students/${selectedId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mark: marks })
-      })
+      const res = await fetch(
+        'https://student-mark-backend.onrender.com/api/students'
+      )
+
       const data = await res.json()
-      alert('Marks updated! ✅')
+
+      console.log(data)
+
+      setStudents(data)
     } catch (err) {
+      console.log(err)
+      alert('Failed to load students')
+    }
+  }
+
+  useEffect(() => {
+    fetchStudents()
+  }, [])
+
+  // Handle input changes
+  const handleChange = (e) => {
+    setMarks({
+      ...marks,
+      [e.target.name]: Number(e.target.value)
+    })
+  }
+
+  // Submit marks
+  const handleSubmit = async () => {
+    if (!selectedId) {
+      alert('Please select a student')
+      return
+    }
+
+    try {
+      const res = await fetch(
+        `https://student-mark-backend.onrender.com/api/students/${selectedId}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ mark: marks })
+        }
+      )
+
+      const data = await res.json()
+
+      console.log(data)
+
+      alert('Marks updated successfully ✅')
+
+      // Clear form
+      setMarks({
+        tamil: '',
+        english: '',
+        maths: '',
+        science: '',
+        social: ''
+      })
+
+      setSelectedId('')
+
+      // Refresh students list
+      fetchStudents()
+
+    } catch (err) {
+      console.log(err)
       alert('Error: ' + err.message)
     }
   }
@@ -37,21 +90,83 @@ const handleChange = (e) => {
   return (
     <div>
       <h2>Enter Marks</h2>
-      <select onChange={(e) => setSelectedId(e.target.value)}>
-        <option>Select Student</option>
-        {students.map(s => (
-          <option key={s._id} value={s._id}>{s.name}</option>
+
+      <select
+        value={selectedId}
+        onChange={(e) => setSelectedId(e.target.value)}
+      >
+        <option value="">Select Student</option>
+
+        {students.map((s) => (
+          <option key={s._id} value={s._id}>
+            {s.name}
+          </option>
         ))}
       </select>
-      <br/><br/>
-      <input placeholder="Tamil" name="tamil" value={marks.tamil} onChange={handleChange}/><br/><br/>
-      <input placeholder="English" name="english" value={marks.english} onChange={handleChange}/><br/><br/>
-      <input placeholder="Maths" name="maths" value={marks.maths} onChange={handleChange}/><br/><br/>
-      <input placeholder="Science" name="science" value={marks.science} onChange={handleChange}/><br/><br/>
-      <input placeholder="Social" name="social" value={marks.social} onChange={handleChange}/><br/><br/>
-      <button onClick={handleSubmit}>Save Marks</button>
+
+      <br />
+      <br />
+
+      <input
+        type="number"
+        placeholder="Tamil"
+        name="tamil"
+        value={marks.tamil}
+        onChange={handleChange}
+      />
+
+      <br />
+      <br />
+
+      <input
+        type="number"
+        placeholder="English"
+        name="english"
+        value={marks.english}
+        onChange={handleChange}
+      />
+
+      <br />
+      <br />
+
+      <input
+        type="number"
+        placeholder="Maths"
+        name="maths"
+        value={marks.maths}
+        onChange={handleChange}
+      />
+
+      <br />
+      <br />
+
+      <input
+        type="number"
+        placeholder="Science"
+        name="science"
+        value={marks.science}
+        onChange={handleChange}
+      />
+
+      <br />
+      <br />
+
+      <input
+        type="number"
+        placeholder="Social"
+        name="social"
+        value={marks.social}
+        onChange={handleChange}
+      />
+
+      <br />
+      <br />
+
+      <button onClick={handleSubmit}>
+        Save Marks
+      </button>
     </div>
   )
 }
 
-export default EnterMarks;
+export default EnterMarks
