@@ -14,19 +14,53 @@ function AddStudent() {
   }
 
   const handleSubmit = async () => {
-    try {
-      const res = await fetch('https://student-mark-backend.onrender.com/api/students', {
+
+  try {
+
+    const res = await fetch(
+      'https://student-mark-backend.onrender.com/api/students',
+      {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+
+        headers: {
+          'Content-Type': 'application/json'
+        },
+
         body: JSON.stringify(form)
+      }
+    )
+
+    const data = await res.json()
+
+    console.log(data)
+
+    // Check response status
+    if (res.ok) {
+
+      alert('Student added successfully ✅')
+
+      setForm({
+        name: '',
+        rollno: '',
+        class: '',
+        email: ''
       })
-      const data = await res.json()
-      alert('Student added! ✅')
-      setForm({ name: '', rollno:  '', class: '',email:'' })
-    } catch (err) {
-      alert('Error: ' + err.message)
+
+    } else {
+
+      alert(data.message)
+
     }
+
+  } catch (err) {
+
+    console.log(err)
+
+    alert('Error: ' + err.message)
+
   }
+
+}
 
   return (
     <div>
