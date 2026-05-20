@@ -14,9 +14,12 @@ app.use(cors({
 
 app.use(express.json());
 
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("mongodb connected successfully"))
-  .catch((err) => console.log("error:", err));
+mongoose.connect(process.env.MONGO_URI, {
+  dbName: "studentDB",
+  serverSelectionTimeoutMS: 30000
+})
+.then(() => console.log("mongodb connected successfully"))
+.catch((err) => console.log("error:", err));
 
 app.use('/api/students', studentRoutes);
 
