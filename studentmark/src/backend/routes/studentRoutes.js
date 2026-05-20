@@ -2,16 +2,33 @@ import express from 'express';
 import student from '../models/student.js';
 const router=express.Router();
 
-router.get('/',async(req,res)=>{
-    try{
-        const students=await student.find();
-        res.json(students);
+router.get('/test', async (req, res) => {
 
-    }
-    catch(err){
-        res.status(500).json({message:err.message});
-    }
-});
+  try {
+
+    const newStudent = new student({
+      name: "Bhavani",
+      rollno: "101",
+      class: "MCA"
+    })
+
+    await newStudent.save()
+
+    res.json({
+      message: "Test student saved"
+    })
+
+  } catch (err) {
+
+    console.log(err)
+
+    res.status(500).json({
+      message: err.message
+    })
+
+  }
+
+})
 router.post('/', async (req, res) => {
 
   try {
