@@ -12,7 +12,7 @@ function EnterMarks() {
   })
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/students')
+    fetch('https://student-mark-backend.onrender.com/api/students')
       .then(res => res.json())
       .then(data => setStudents(data))
   }, [])
@@ -22,7 +22,7 @@ const handleChange = (e) => {
 
   const handleSubmit = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/api/students/${selectedId}`, {
+      fetch(`https://student-mark-backend.onrender.com/api/students/${selectedId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ mark: marks })

@@ -4,7 +4,7 @@ function Dashboard() {
   const [students, setStudents] = useState([])
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/students')
+    fetch('https://student-mark-backend.onrender.com/api/students')
       .then(res => res.json())
       .then(data => setStudents(data))
   }, [])

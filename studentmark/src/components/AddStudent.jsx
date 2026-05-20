@@ -14,7 +14,7 @@ function AddStudent() {
 
   const handleSubmit = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/students', {
+      const res = await fetch('https://student-mark-backend.onrender.com/api/students', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form)
