@@ -5,6 +5,7 @@ function AddStudent() {
     name: '',
     rollno: '',
     class: '',
+     email: ''
     
   })
 
@@ -48,6 +49,12 @@ function AddStudent() {
         value={form.class}
         onChange={handleChange}
       /><br/><br/>
+      <input
+  placeholder="Email"
+  name="email"
+  value={form.email}
+  onChange={handleChange}
+/><br/><br/>
       
       <button onClick={handleSubmit}>Add Student</button>
     </div>

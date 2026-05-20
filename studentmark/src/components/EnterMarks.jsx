@@ -22,7 +22,7 @@ const handleChange = (e) => {
 
   const handleSubmit = async () => {
     try {
-      fetch(`https://student-mark-backend.onrender.com/api/students/${selectedId}`, {
+      const res=await fetch(`https://student-mark-backend.onrender.com/api/students/${selectedId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ mark: marks })
