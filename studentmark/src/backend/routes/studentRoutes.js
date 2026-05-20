@@ -24,35 +24,6 @@ router.get('/', async (req, res) => {
 
 })
 
-// TEST route
-router.get('/test', async (req, res) => {
-
-  try {
-
-    const newStudent = new student({
-      name: "Bhavani",
-      rollno: "101",
-      class: "MCA"
-    })
-
-    await newStudent.save()
-
-    res.json({
-      message: "Test student saved"
-    })
-
-  } catch (err) {
-
-    console.log(err)
-
-    res.status(500).json({
-      message: err.message
-    })
-
-  }
-
-})
-
 // ADD student
 router.post('/', async (req, res) => {
 
