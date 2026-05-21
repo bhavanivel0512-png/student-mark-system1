@@ -4,118 +4,54 @@ function Dashboard() {
 
   const [students, setStudents] = useState([])
 
-  const [editStudent, setEditStudent] = useState(null)
-
-  const [form, setForm] = useState({
-    name: '',
-    rollno: '',
-    class: ''
-  })
-
-  // GET students
   const fetchStudents = async () => {
-
     try {
-
-      const res = await fetch(
-        'https://student-mark-backend.onrender.com/api/students'
-      )
-
+      const res = await fetch('https://student-mark-backend.onrender.com/api/students')
       const data = await res.json()
-
-      console.log(data)
-
-      if (Array.isArray(data)) {
-        setStudents(data)
-      } else {
-        setStudents([])
-      }
-
-    } catch (err) {
-      console.log(err)
+      setStudents(Array.isArray(data) ? data : [])
+    } catch {
       setStudents([])
     }
-
   }
 
   useEffect(() => {
     fetchStudents()
   }, [])
 
-  // DELETE student
   const handleDelete = async (id) => {
+    if (!window.confirm("Delete?")) return
 
-    const confirmDelete = window.confirm("Delete this student?")
+    await fetch(
+      `https://student-mark-backend.onrender.com/api/students/${id}`,
+      { method: 'DELETE' }
+    )
 
-    if (!confirmDelete) return
-
-    try {
-
-      await fetch(
-        `https://student-mark-backend.onrender.com/api/students/${id}`,
-        {
-          method: 'DELETE'
-        }
-      )
-
-      fetchStudents()
-
-    } catch (err) {
-      console.log(err)
-      alert("Delete failed")
-    }
-
+    fetchStudents()
   }
 
-  // EDIT click
-  const handleEdit = (student) => {
+  const handleEdit = async (student) => {
+    const name = prompt("Edit Name", student.name)
+    const rollno = prompt("Edit Roll No", student.rollno)
+    const Class = prompt("Edit Class", student.class)
 
-    setEditStudent(student)
+    await fetch(
+      `https://student-mark-backend.onrender.com/api/students/${student._id}`,
+      {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, rollno, class: Class })
+      }
+    )
 
-    setForm({
-      name: student.name,
-      rollno: student.rollno,
-      class: student.class
-    })
-
-  }
-
-  // UPDATE student
-  const handleUpdate = async () => {
-
-    try {
-
-      await fetch(
-        `https://student-mark-backend.onrender.com/api/students/${editStudent._id}`,
-        {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(form)
-        }
-      )
-
-      setEditStudent(null)
-
-      fetchStudents()
-
-    } catch (err) {
-      console.log(err)
-      alert("Update failed")
-    }
-
+    fetchStudents()
   }
 
   return (
-
-    <div style={{ padding: '20px' }}>
+    <div>
 
       <h2>Dashboard</h2>
-
       <p>Total Students: {students.length}</p>
 
-      {/* TABLE */}
       <table border="1" cellPadding="10">
 
         <thead>
@@ -130,97 +66,30 @@ function Dashboard() {
         <tbody>
 
           {students.length === 0 ? (
-
             <tr>
               <td colSpan="4">No Students Found</td>
             </tr>
-
           ) : (
-
             students.map((s) => (
-
               <tr key={s._id}>
-
                 <td>{s.name}</td>
                 <td>{s.rollno}</td>
                 <td>{s.class}</td>
 
                 <td>
-
-                  <button onClick={() => handleEdit(s)}>
-                    Edit
-                  </button>
-
-                  <button
-                    onClick={() => handleDelete(s._id)}
-                    style={{ background: 'red', color: 'white' }}
-                  >
-                    Delete
-                  </button>
-
+                  <button onClick={() => handleEdit(s)}>Edit</button>
+                  <button onClick={() => handleDelete(s._id)}>Delete</button>
                 </td>
 
               </tr>
-
             ))
-
           )}
 
         </tbody>
 
       </table>
 
-      {/* EDIT FORM */}
-      {editStudent && (
-
-        <div style={{ marginTop: '20px' }}>
-
-          <h3>Edit Student</h3>
-
-          <input
-            placeholder="Name"
-            value={form.name}
-            onChange={(e) =>
-              setForm({ ...form, name: e.target.value })
-            }
-          />
-
-          <br /><br />
-
-          <input
-            placeholder="Roll No"
-            value={form.rollno}
-            onChange={(e) =>
-              setForm({ ...form, rollno: e.target.value })
-            }
-          />
-
-          <br /><br />
-
-          <input
-            placeholder="Class"
-            value={form.class}
-            onChange={(e) =>
-              setForm({ ...form, class: e.target.value })
-            }
-          />
-
-          <br /><br />
-
-          <button onClick={handleUpdate}>
-            Update
-          </button>
-
-          <button onClick={() => setEditStudent(null)}>
-            Cancel
-          </button>
-
-        </div>
-
-      )}
-
     </div>
-
   )
 }
 

@@ -1,226 +1,58 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 function EnterMarks() {
 
   const [students, setStudents] = useState([])
+  const [id, setId] = useState('')
+  const [marks, setMarks] = useState({ tamil: '', english: '', maths: '', science: '', social: '' })
 
-  const [selectedId, setSelectedId] = useState('')
-
-  const [marks, setMarks] = useState({
-    tamil: '',
-    english: '',
-    maths: '',
-    science: '',
-    social: ''
-  })
-
-  // Fetch students
-  const fetchStudents = async () => {
-
-    try {
-
-      const res = await fetch(
-        'https://student-mark-backend.onrender.com/api/students'
-      )
-
-      const data = await res.json()
-
-      console.log(data)
-
-      // Check array
-      if (Array.isArray(data)) {
-
-        setStudents(data)
-
-      } else {
-
-        setStudents([])
-
-      }
-
-    } catch (err) {
-
-      console.log(err)
-
-      alert('Failed to load students')
-
-    }
-
-  }
-
-  // Load students
   useEffect(() => {
-
-    const loadStudents = async () => {
-
-      // Render backend wake up
-      await new Promise((resolve) => setTimeout(resolve, 4000))
-
-      fetchStudents()
-
-    }
-
-    loadStudents()
-
+    fetch('https://student-mark-backend.onrender.com/api/students')
+      .then(res => res.json())
+      .then(data => setStudents(Array.isArray(data) ? data : []))
   }, [])
 
-  // Handle input change
   const handleChange = (e) => {
-
-    setMarks({
-      ...marks,
-      [e.target.name]: Number(e.target.value)
-    })
-
+    setMarks({ ...marks, [e.target.name]: Number(e.target.value) })
   }
 
-  // Save marks
   const handleSubmit = async () => {
 
-    if (!selectedId) {
+    await fetch(
+      `https://student-mark-backend.onrender.com/api/students/${id}`,
+      {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mark: marks })
+      }
+    )
 
-      alert('Please select a student')
-
-      return
-
-    }
-
-    try {
-
-      const res = await fetch(
-        `https://student-mark-backend.onrender.com/api/students/${selectedId}`,
-        {
-          method: 'PUT',
-
-          headers: {
-            'Content-Type': 'application/json'
-          },
-
-          body: JSON.stringify({
-            mark: marks
-          })
-        }
-      )
-
-      const data = await res.json()
-
-      console.log(data)
-
-      alert('Marks updated successfully ✅')
-
-      // Reset form
-      setMarks({
-        tamil: '',
-        english: '',
-        maths: '',
-        science: '',
-        social: ''
-      })
-
-      setSelectedId('')
-
-      // Reload students
-      fetchStudents()
-
-    } catch (err) {
-
-      console.log(err)
-
-      alert('Error: ' + err.message)
-
-    }
-
+    alert("Marks Updated")
   }
 
   return (
-
     <div>
 
       <h2>Enter Marks</h2>
 
-      <select
-        value={selectedId}
-        onChange={(e) => setSelectedId(e.target.value)}
-      >
-
-        <option value="">
-          Select Student
-        </option>
-
-        {students.map((s) => (
-
-          <option key={s._id} value={s._id}>
-            {s.name}
-          </option>
-
+      <select onChange={(e) => setId(e.target.value)}>
+        <option>Select Student</option>
+        {students.map(s => (
+          <option key={s._id} value={s._id}>{s.name}</option>
         ))}
-
       </select>
 
-      <br />
-      <br />
+      <br /><br />
 
-      <input
-        type="number"
-        placeholder="Tamil"
-        name="tamil"
-        value={marks.tamil}
-        onChange={handleChange}
-      />
+      <input name="tamil" placeholder="Tamil" onChange={handleChange} /><br /><br />
+      <input name="english" placeholder="English" onChange={handleChange} /><br /><br />
+      <input name="maths" placeholder="Maths" onChange={handleChange} /><br /><br />
+      <input name="science" placeholder="Science" onChange={handleChange} /><br /><br />
+      <input name="social" placeholder="Social" onChange={handleChange} /><br /><br />
 
-      <br />
-      <br />
-
-      <input
-        type="number"
-        placeholder="English"
-        name="english"
-        value={marks.english}
-        onChange={handleChange}
-      />
-
-      <br />
-      <br />
-
-      <input
-        type="number"
-        placeholder="Maths"
-        name="maths"
-        value={marks.maths}
-        onChange={handleChange}
-      />
-
-      <br />
-      <br />
-
-      <input
-        type="number"
-        placeholder="Science"
-        name="science"
-        value={marks.science}
-        onChange={handleChange}
-      />
-
-      <br />
-      <br />
-
-      <input
-        type="number"
-        placeholder="Social"
-        name="social"
-        value={marks.social}
-        onChange={handleChange}
-      />
-
-      <br />
-      <br />
-
-      <button onClick={handleSubmit}>
-        Save Marks
-      </button>
+      <button onClick={handleSubmit}>Save</button>
 
     </div>
-
   )
 }
 
