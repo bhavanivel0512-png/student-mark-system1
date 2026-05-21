@@ -13,18 +13,28 @@ function AddStudent() {
   }
 
   const handleSubmit = async () => {
-    await fetch(
-      'https://student-mark-backend.onrender.com/api/students',
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form)
-      }
-    )
+    try {
 
-    alert("Student Added")
+      const res = await fetch(
+        'https://student-mark-backend.onrender.com/api/students',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(form)
+        }
+      )
 
-    setForm({ name: '', rollno: '', class: '' })
+      const data = await res.json()
+      console.log(data)
+
+      alert('Student added')
+
+      setForm({ name: '', rollno: '', class: '' })
+
+    } catch (err) {
+      console.log(err)
+      alert('Error')
+    }
   }
 
   return (

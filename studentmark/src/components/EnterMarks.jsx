@@ -3,23 +3,40 @@ import { useEffect, useState } from 'react'
 function EnterMarks() {
 
   const [students, setStudents] = useState([])
-  const [id, setId] = useState('')
-  const [marks, setMarks] = useState({ tamil: '', english: '', maths: '', science: '', social: '' })
+  const [selectedId, setSelectedId] = useState('')
+
+  const [marks, setMarks] = useState({
+    tamil: '',
+    english: '',
+    maths: '',
+    science: '',
+    social: ''
+  })
 
   useEffect(() => {
     fetch('https://student-mark-backend.onrender.com/api/students')
       .then(res => res.json())
-      .then(data => setStudents(Array.isArray(data) ? data : []))
+      .then(data => {
+        if (Array.isArray(data)) setStudents(data)
+      })
   }, [])
 
   const handleChange = (e) => {
-    setMarks({ ...marks, [e.target.name]: Number(e.target.value) })
+    setMarks({
+      ...marks,
+      [e.target.name]: Number(e.target.value)
+    })
   }
 
   const handleSubmit = async () => {
 
+    if (!selectedId) {
+      alert("Select student")
+      return
+    }
+
     await fetch(
-      `https://student-mark-backend.onrender.com/api/students/${id}`,
+      `https://student-mark-backend.onrender.com/api/students/${selectedId}`,
       {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -27,7 +44,17 @@ function EnterMarks() {
       }
     )
 
-    alert("Marks Updated")
+    alert("Marks saved")
+
+    setMarks({
+      tamil: '',
+      english: '',
+      maths: '',
+      science: '',
+      social: ''
+    })
+
+    setSelectedId('')
   }
 
   return (
@@ -35,20 +62,32 @@ function EnterMarks() {
 
       <h2>Enter Marks</h2>
 
-      <select onChange={(e) => setId(e.target.value)}>
-        <option>Select Student</option>
+      <select value={selectedId} onChange={(e) => setSelectedId(e.target.value)}>
+        <option value="">Select Student</option>
+
         {students.map(s => (
-          <option key={s._id} value={s._id}>{s.name}</option>
+          <option key={s._id} value={s._id}>
+            {s.name}
+          </option>
         ))}
       </select>
 
       <br /><br />
 
-      <input name="tamil" placeholder="Tamil" onChange={handleChange} /><br /><br />
-      <input name="english" placeholder="English" onChange={handleChange} /><br /><br />
-      <input name="maths" placeholder="Maths" onChange={handleChange} /><br /><br />
-      <input name="science" placeholder="Science" onChange={handleChange} /><br /><br />
-      <input name="social" placeholder="Social" onChange={handleChange} /><br /><br />
+      <input name="tamil" placeholder="Tamil" onChange={handleChange} />
+      <br /><br />
+
+      <input name="english" placeholder="English" onChange={handleChange} />
+      <br /><br />
+
+      <input name="maths" placeholder="Maths" onChange={handleChange} />
+      <br /><br />
+
+      <input name="science" placeholder="Science" onChange={handleChange} />
+      <br /><br />
+
+      <input name="social" placeholder="Social" onChange={handleChange} />
+      <br /><br />
 
       <button onClick={handleSubmit}>Save</button>
 

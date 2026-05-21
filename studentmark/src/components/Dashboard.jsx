@@ -5,40 +5,19 @@ function Dashboard() {
   const [students, setStudents] = useState([])
 
   useEffect(() => {
-
     fetch('https://student-mark-backend.onrender.com/api/students')
-
-      .then((res) => res.json())
-
-      .then((data) => {
-
-        console.log(data)
-
-        // Check if data is array
+      .then(res => res.json())
+      .then(data => {
         if (Array.isArray(data)) {
-
           setStudents(data)
-
         } else {
-
           setStudents([])
-
-          console.log("Not an array")
-
         }
-
       })
-
-      .catch((err) => {
-
-        console.log(err)
-
-      })
-
+      .catch(() => setStudents([]))
   }, [])
 
   return (
-
     <div>
 
       <h2>Dashboard</h2>
@@ -57,24 +36,25 @@ function Dashboard() {
 
         <tbody>
 
-          {students.map((s) => (
-
-            <tr key={s._id}>
-
-              <td>{s.name}</td>
-              <td>{s.rollno}</td>
-              <td>{s.class}</td>
-
+          {students.length === 0 ? (
+            <tr>
+              <td colSpan="3">No Students</td>
             </tr>
-
-          ))}
+          ) : (
+            students.map((s) => (
+              <tr key={s._id}>
+                <td>{s.name}</td>
+                <td>{s.rollno}</td>
+                <td>{s.class}</td>
+              </tr>
+            ))
+          )}
 
         </tbody>
 
       </table>
 
     </div>
-
   )
 }
 
