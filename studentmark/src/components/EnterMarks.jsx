@@ -14,11 +14,31 @@ function EnterMarks() {
   })
 
   useEffect(() => {
-    fetch('https://student-mark-backend.onrender.com/api/students')
-      .then(res => res.json())
-      .then(data => {
-        if (Array.isArray(data)) setStudents(data)
-      })
+
+    const loadStudents = async () => {
+      try {
+
+        await new Promise(r => setTimeout(r, 3000))
+
+        const res = await fetch(
+          'https://student-mark-backend.onrender.com/api/students',
+          { cache: "no-store" }
+        )
+
+        const data = await res.json()
+
+        console.log("DROPDOWN DATA:", data)
+
+        setStudents(Array.isArray(data) ? data : [])
+
+      } catch (err) {
+        console.log(err)
+        setStudents([])
+      }
+    }
+
+    loadStudents()
+
   }, [])
 
   const handleChange = (e) => {
@@ -35,26 +55,34 @@ function EnterMarks() {
       return
     }
 
-    await fetch(
-      `https://student-mark-backend.onrender.com/api/students/${selectedId}`,
-      {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mark: marks })
-      }
-    )
+    try {
 
-    alert("Marks saved")
+      await fetch(
+        `https://student-mark-backend.onrender.com/api/students/${selectedId}`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mark: marks })
+        }
+      )
 
-    setMarks({
-      tamil: '',
-      english: '',
-      maths: '',
-      science: '',
-      social: ''
-    })
+      alert("Marks saved")
 
-    setSelectedId('')
+      setMarks({
+        tamil: '',
+        english: '',
+        maths: '',
+        science: '',
+        social: ''
+      })
+
+      setSelectedId('')
+
+    } catch (err) {
+      console.log(err)
+      alert("Error saving marks")
+    }
+
   }
 
   return (
@@ -62,14 +90,22 @@ function EnterMarks() {
 
       <h2>Enter Marks</h2>
 
-      <select value={selectedId} onChange={(e) => setSelectedId(e.target.value)}>
+      <select
+        value={selectedId}
+        onChange={(e) => setSelectedId(e.target.value)}
+      >
         <option value="">Select Student</option>
 
-        {students.map(s => (
-          <option key={s._id} value={s._id}>
-            {s.name}
-          </option>
-        ))}
+        {students.length === 0 ? (
+          <option disabled>No Students</option>
+        ) : (
+          students.map(s => (
+            <option key={s._id} value={s._id}>
+              {s.name}
+            </option>
+          ))
+        )}
+
       </select>
 
       <br /><br />

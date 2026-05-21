@@ -3,29 +3,33 @@ import { useEffect, useState } from 'react'
 function Results() {
 
   const [students, setStudents] = useState([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
 
-    fetch('https://student-mark-backend.onrender.com/api/students')
+    const loadResults = async () => {
+      try {
 
-      .then(res => res.json())
+        const res = await fetch(
+          'https://student-mark-backend.onrender.com/api/students',
+          { cache: "no-store" }
+        )
 
-      .then(data => {
+        const data = await res.json()
 
-        console.log(data)
+        console.log("RESULT DATA:", data)
 
-        if (Array.isArray(data)) {
-          setStudents(data)
-        } else {
-          setStudents([])
-        }
+        setStudents(Array.isArray(data) ? data : [])
 
-      })
-
-      .catch(err => {
+      } catch (err) {
         console.log(err)
         setStudents([])
-      })
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadResults()
 
   }, [])
 
@@ -51,69 +55,74 @@ function Results() {
 
     const status = percentage >= 35 ? 'Pass ✅' : 'Fail ❌'
 
-    return {
-      total,
-      percentage: percentage.toFixed(2),
-      grade,
-      status
-    }
+    return { total, percentage: percentage.toFixed(2), grade, status }
   }
 
   return (
-
-    <div>
+    <div style={{ padding: '20px' }}>
 
       <h2>Results</h2>
 
-      <table border="1">
+      {loading ? (
+        <p>Loading results...</p>
+      ) : (
 
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Roll No</th>
-            <th>Tamil</th>
-            <th>English</th>
-            <th>Maths</th>
-            <th>Science</th>
-            <th>Social</th>
-            <th>Total</th>
-            <th>Percentage</th>
-            <th>Grade</th>
-            <th>Status</th>
-          </tr>
-        </thead>
+        <table border="1" cellPadding="10">
 
-        <tbody>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Roll No</th>
+              <th>Tamil</th>
+              <th>English</th>
+              <th>Maths</th>
+              <th>Science</th>
+              <th>Social</th>
+              <th>Total</th>
+              <th>Percentage</th>
+              <th>Grade</th>
+              <th>Status</th>
+            </tr>
+          </thead>
 
-          {students.map((s) => {
+          <tbody>
 
-            const result = calculateResult(s.mark)
-
-            return (
-              <tr key={s._id}>
-                <td>{s.name}</td>
-                <td>{s.rollno}</td>
-                <td>{s.mark?.tamil || 0}</td>
-                <td>{s.mark?.english || 0}</td>
-                <td>{s.mark?.maths || 0}</td>
-                <td>{s.mark?.science || 0}</td>
-                <td>{s.mark?.social || 0}</td>
-                <td>{result.total}</td>
-                <td>{result.percentage}%</td>
-                <td>{result.grade}</td>
-                <td>{result.status}</td>
+            {students.length === 0 ? (
+              <tr>
+                <td colSpan="11">No Data Found</td>
               </tr>
-            )
+            ) : (
+              students.map((s) => {
 
-          })}
+                const result = calculateResult(s.mark)
 
-        </tbody>
+                return (
+                  <tr key={s._id}>
+                    <td>{s.name}</td>
+                    <td>{s.rollno}</td>
+                    <td>{s.mark?.tamil || 0}</td>
+                    <td>{s.mark?.english || 0}</td>
+                    <td>{s.mark?.maths || 0}</td>
+                    <td>{s.mark?.science || 0}</td>
+                    <td>{s.mark?.social || 0}</td>
+                    <td>{result.total}</td>
+                    <td>{result.percentage}%</td>
+                    <td>{result.grade}</td>
+                    <td>{result.status}</td>
+                  </tr>
+                )
 
-      </table>
+              })
+            )}
+
+          </tbody>
+
+        </table>
+
+      )}
 
     </div>
-
   )
-
+}
 
 export default Results
