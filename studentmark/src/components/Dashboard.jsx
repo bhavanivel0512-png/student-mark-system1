@@ -20,11 +20,9 @@ function Dashboard() {
 
       const data = await res.json()
 
-      if (Array.isArray(data)) {
-        setStudents(data)
-      } else {
-        setStudents([])
-      }
+      console.log("API DATA:", data)
+
+      setStudents(Array.isArray(data) ? data : [])
 
     } catch (err) {
       console.log(err)
@@ -36,17 +34,15 @@ function Dashboard() {
     fetchStudents()
   }, [])
 
-  // DELETE student
+  // DELETE
   const handleDelete = async (id) => {
-    const confirmDelete = window.confirm("Delete this student?")
-    if (!confirmDelete) return
+    const ok = window.confirm("Delete student?")
+    if (!ok) return
 
     try {
       await fetch(
         `https://student-mark-backend.onrender.com/api/students/${id}`,
-        {
-          method: 'DELETE'
-        }
+        { method: 'DELETE' }
       )
 
       fetchStudents()
@@ -57,10 +53,9 @@ function Dashboard() {
     }
   }
 
-  // EDIT click
+  // EDIT
   const handleEdit = (student) => {
     setEditStudent(student)
-
     setForm({
       name: student.name,
       rollno: student.rollno,
@@ -68,16 +63,14 @@ function Dashboard() {
     })
   }
 
-  // UPDATE student
+  // UPDATE
   const handleUpdate = async () => {
     try {
       await fetch(
         `https://student-mark-backend.onrender.com/api/students/${editStudent._id}`,
         {
           method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json'
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(form)
         }
       )
@@ -92,12 +85,11 @@ function Dashboard() {
   }
 
   return (
-    <div style={{ padding: '20px' }}>
+    <div style={{ padding: "20px" }}>
 
       <h2>Dashboard</h2>
       <p>Total Students: {students.length}</p>
 
-      {/* TABLE */}
       <table border="1" cellPadding="10" style={{ width: "100%" }}>
 
         <thead>
@@ -116,7 +108,6 @@ function Dashboard() {
               <td colSpan="4">No Students Found</td>
             </tr>
           ) : (
-
             students.map((s) => (
               <tr key={s._id}>
 
@@ -128,26 +119,14 @@ function Dashboard() {
 
                   <button
                     onClick={() => handleEdit(s)}
-                    style={{
-                      background: "orange",
-                      color: "white",
-                      border: "none",
-                      padding: "5px 10px",
-                      cursor: "pointer"
-                    }}
+                    style={{ background: "orange", color: "white", padding: "5px 10px" }}
                   >
                     Edit
                   </button>
 
                   <button
                     onClick={() => handleDelete(s._id)}
-                    style={{
-                      background: "red",
-                      color: "white",
-                      border: "none",
-                      padding: "5px 10px",
-                      cursor: "pointer"
-                    }}
+                    style={{ background: "red", color: "white", padding: "5px 10px" }}
                   >
                     Delete
                   </button>
@@ -156,7 +135,6 @@ function Dashboard() {
 
               </tr>
             ))
-
           )}
 
         </tbody>
@@ -165,28 +143,28 @@ function Dashboard() {
 
       {/* EDIT FORM */}
       {editStudent && (
-        <div style={{ marginTop: '20px' }}>
+        <div style={{ marginTop: "20px" }}>
 
           <h3>Edit Student</h3>
 
           <input
-            placeholder="Name"
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
+            placeholder="Name"
           />
           <br /><br />
 
           <input
-            placeholder="Roll No"
             value={form.rollno}
             onChange={(e) => setForm({ ...form, rollno: e.target.value })}
+            placeholder="Roll No"
           />
           <br /><br />
 
           <input
-            placeholder="Class"
             value={form.class}
             onChange={(e) => setForm({ ...form, class: e.target.value })}
+            placeholder="Class"
           />
           <br /><br />
 
