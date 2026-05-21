@@ -3,13 +3,31 @@ import { useEffect, useState } from 'react'
 function Dashboard() {
 
   const [students, setStudents] = useState([])
+  const [editStudent, setEditStudent] = useState(null)
 
+  const [form, setForm] = useState({
+    name: '',
+    rollno: '',
+    class: ''
+  })
+
+  // GET students
   const fetchStudents = async () => {
     try {
-      const res = await fetch('https://student-mark-backend.onrender.com/api/students')
+      const res = await fetch(
+        'https://student-mark-backend.onrender.com/api/students'
+      )
+
       const data = await res.json()
-      setStudents(Array.isArray(data) ? data : [])
-    } catch {
+
+      if (Array.isArray(data)) {
+        setStudents(data)
+      } else {
+        setStudents([])
+      }
+
+    } catch (err) {
+      console.log(err)
       setStudents([])
     }
   }
@@ -18,41 +36,69 @@ function Dashboard() {
     fetchStudents()
   }, [])
 
+  // DELETE student
   const handleDelete = async (id) => {
-    if (!window.confirm("Delete?")) return
+    const confirmDelete = window.confirm("Delete this student?")
+    if (!confirmDelete) return
 
-    await fetch(
-      `https://student-mark-backend.onrender.com/api/students/${id}`,
-      { method: 'DELETE' }
-    )
+    try {
+      await fetch(
+        `https://student-mark-backend.onrender.com/api/students/${id}`,
+        {
+          method: 'DELETE'
+        }
+      )
 
-    fetchStudents()
+      fetchStudents()
+
+    } catch (err) {
+      console.log(err)
+      alert("Delete failed")
+    }
   }
 
-  const handleEdit = async (student) => {
-    const name = prompt("Edit Name", student.name)
-    const rollno = prompt("Edit Roll No", student.rollno)
-    const Class = prompt("Edit Class", student.class)
+  // EDIT click
+  const handleEdit = (student) => {
+    setEditStudent(student)
 
-    await fetch(
-      `https://student-mark-backend.onrender.com/api/students/${student._id}`,
-      {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, rollno, class: Class })
-      }
-    )
+    setForm({
+      name: student.name,
+      rollno: student.rollno,
+      class: student.class
+    })
+  }
 
-    fetchStudents()
+  // UPDATE student
+  const handleUpdate = async () => {
+    try {
+      await fetch(
+        `https://student-mark-backend.onrender.com/api/students/${editStudent._id}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(form)
+        }
+      )
+
+      setEditStudent(null)
+      fetchStudents()
+
+    } catch (err) {
+      console.log(err)
+      alert("Update failed")
+    }
   }
 
   return (
-    <div>
+    <div style={{ padding: '20px' }}>
 
       <h2>Dashboard</h2>
       <p>Total Students: {students.length}</p>
 
-      <table border="1" cellPadding="10">
+      {/* TABLE */}
+      <table border="1" cellPadding="10" style={{ width: "100%" }}>
 
         <thead>
           <tr>
@@ -70,24 +116,85 @@ function Dashboard() {
               <td colSpan="4">No Students Found</td>
             </tr>
           ) : (
+
             students.map((s) => (
               <tr key={s._id}>
+
                 <td>{s.name}</td>
                 <td>{s.rollno}</td>
                 <td>{s.class}</td>
 
-                <td>
-                  <button onClick={() => handleEdit(s)}>Edit</button>
-                  <button onClick={() => handleDelete(s._id)}>Delete</button>
+                <td style={{ display: "flex", gap: "10px" }}>
+
+                  <button
+                    onClick={() => handleEdit(s)}
+                    style={{
+                      background: "orange",
+                      color: "white",
+                      border: "none",
+                      padding: "5px 10px",
+                      cursor: "pointer"
+                    }}
+                  >
+                    Edit
+                  </button>
+
+                  <button
+                    onClick={() => handleDelete(s._id)}
+                    style={{
+                      background: "red",
+                      color: "white",
+                      border: "none",
+                      padding: "5px 10px",
+                      cursor: "pointer"
+                    }}
+                  >
+                    Delete
+                  </button>
+
                 </td>
 
               </tr>
             ))
+
           )}
 
         </tbody>
 
       </table>
+
+      {/* EDIT FORM */}
+      {editStudent && (
+        <div style={{ marginTop: '20px' }}>
+
+          <h3>Edit Student</h3>
+
+          <input
+            placeholder="Name"
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+          />
+          <br /><br />
+
+          <input
+            placeholder="Roll No"
+            value={form.rollno}
+            onChange={(e) => setForm({ ...form, rollno: e.target.value })}
+          />
+          <br /><br />
+
+          <input
+            placeholder="Class"
+            value={form.class}
+            onChange={(e) => setForm({ ...form, class: e.target.value })}
+          />
+          <br /><br />
+
+          <button onClick={handleUpdate}>Update</button>
+          <button onClick={() => setEditStudent(null)}>Cancel</button>
+
+        </div>
+      )}
 
     </div>
   )
