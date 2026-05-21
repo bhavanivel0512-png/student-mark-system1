@@ -4,40 +4,48 @@ function Dashboard() {
 
   const [students, setStudents] = useState([])
 
-  const fetchStudents = async () => {
-    try {
-      const res = await fetch(
-        'https://student-mark-backend.onrender.com/api/students'
-      )
-
-      const data = await res.json()
-
-      console.log("API RESPONSE:", data)
-
-      if (Array.isArray(data)) {
-        setStudents(data)
-      } else {
-        setStudents([])
-      }
-
-    } catch (err) {
-      console.log("FETCH ERROR:", err)
-      setStudents([])
-    }
-  }
-
   useEffect(() => {
-    fetchStudents()
+
+    fetch('https://student-mark-backend.onrender.com/api/students')
+
+      .then((res) => res.json())
+
+      .then((data) => {
+
+        console.log(data)
+
+        // Check if data is array
+        if (Array.isArray(data)) {
+
+          setStudents(data)
+
+        } else {
+
+          setStudents([])
+
+          console.log("Not an array")
+
+        }
+
+      })
+
+      .catch((err) => {
+
+        console.log(err)
+
+      })
+
   }, [])
 
   return (
-    <div style={{ padding: "20px" }}>
+
+    <div>
 
       <h2>Dashboard</h2>
 
       <p>Total Students: {students.length}</p>
 
-      <table border="1" cellPadding="10" style={{ width: "100%" }}>
+      <table border="1">
 
         <thead>
           <tr>
@@ -49,25 +57,24 @@ function Dashboard() {
 
         <tbody>
 
-          {students.length === 0 ? (
-            <tr>
-              <td colSpan="3">No Data Found</td>
+          {students.map((s) => (
+
+            <tr key={s._id}>
+
+              <td>{s.name}</td>
+              <td>{s.rollno}</td>
+              <td>{s.class}</td>
+
             </tr>
-          ) : (
-            students.map((s) => (
-              <tr key={s._id}>
-                <td>{s.name}</td>
-                <td>{s.rollno}</td>
-                <td>{s.class}</td>
-              </tr>
-            ))
-          )}
+
+          ))}
 
         </tbody>
 
       </table>
 
     </div>
+
   )
 }
 
